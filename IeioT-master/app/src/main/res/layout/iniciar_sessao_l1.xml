@@ -1,125 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:fillViewport="true"
+    android:background="@color/bg_light"
     tools:context=".IniciarSessaoL1">
 
-    <TextView
-        android:id="@+id/inicio0"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:textColor="#1A63E2"
-        android:textSize="60dp"
-        android:text="_______">
+        android:orientation="vertical">
 
-    </TextView>
-
-    <TextView
-        android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:textSize="70dp"
-        android:layout_below="@id/inicio0"
-        android:textColor="#1A63E2"
-        android:text="_[ I e i o T ]\_">
-    </TextView>
-    <TextView
-        android:id="@+id/inicio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/logo"
-        android:textSize="60dp"
-        android:text="_______________">
-
-    </TextView>
-    <TextView
-        android:id="@+id/Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/inicio"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="40dp"
-        android:text="INICIAR SESSÃO"
-        android:textSize="40dp" />
-
-    <TextView
-        android:id="@+id/linha1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/Title"
-        android:textColor="@color/material_dynamic_neutral_variant80"
-        android:textSize="60dp"
-        android:text="_______________">
-
-    </TextView>
-    <TextView
-        android:id="@+id/idcliente"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30dp"
-        android:layout_below="@+id/linha1"
-        android:text="ID CLIENTE:" />
-
-
-    <EditText
-        android:id="@+id/insertidcliente"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/idcliente">
-
-    </EditText>
-
-    <TextView
-        android:id="@+id/linha2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/idcliente"
-        android:textColor="@color/material_dynamic_neutral_variant80"
-        android:textSize="60dp"
-        android:text="_______________">
-
-    </TextView>
-        <TextView
-            android:id="@+id/palavrapass"
-            android:layout_width="wrap_content"
+        <!-- Header verde -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/linha2"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:background="@drawable/bg_header_rounded"
+            android:paddingTop="56dp"
+            android:paddingBottom="28dp">
 
-            android:textSize="30dp"
-            android:text="Palavra Pass:" />
+            <ImageView
+                android:id="@+id/logo2"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:src="@drawable/ic_leaf"
+                android:contentDescription="@string/app_name" />
 
-    <EditText
-        android:id="@+id/insertpalavrapass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/palavrapass">
+            <TextView
+                android:id="@+id/logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="AgrIoT"
+                android:textColor="@color/text_on_green"
+                android:textSize="28sp"
+                android:textStyle="bold" />
 
-    </EditText>
+            <TextView
+                android:id="@+id/subtituloEstufa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Estufa Inteligente"
+                android:textColor="@color/text_on_green_soft"
+                android:textSize="14sp" />
+        </LinearLayout>
 
-
-        <Button
-            android:id="@+id/entrar"
-            android:layout_width="200dp"
-            android:layout_weight="10"
-            android:layout_margin="30dp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/insertpalavrapass"
+        <!-- Formulario -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ENTRAR"/>
-    <TextView
-        android:id="@+id/Referencia"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/entrar"
-        android:text="No âmbito da Unidade Curricular de Laboratório de Mecatrónica, esta aplicação foi concedida
-para IeioT, ou seja, Internet of Things em Estufa Inteligente. GitHub: junqueiradeveduardo@gmail.com">
+            android:orientation="vertical"
+            android:padding="24dp">
 
-    </TextView>
+            <TextView
+                android:id="@+id/Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Iniciar Sessão"
+                android:textColor="@color/text_primary"
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
-</RelativeLayout>
+            <TextView
+                android:id="@+id/subtituloEntra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="20dp"
+                android:text="Entra para gerir a sua estufa inteligente"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/idcliente"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ID Cliente"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:layout_marginBottom="6dp" />
+
+            <EditText
+                android:id="@+id/insertidcliente"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@drawable/bg_input_field"
+                android:drawableStart="@drawable/ic_person"
+                android:drawablePadding="10dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:gravity="center_vertical"
+                android:hint="Ex.: 1024"
+                android:inputType="number"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/palavrapass"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="Palavra-passe"
+                android:textColor="@color/text_primary"
+                android:textSize="13sp"
+                android:layout_marginBottom="6dp" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp">
+
+                <EditText
+                    android:id="@+id/insertpalavrapass"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_input_field"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="10dp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="44dp"
+                    android:gravity="center_vertical"
+                    android:hint="••••••••"
+                    android:inputType="textPassword"
+                    android:textSize="15sp" />
+
+                <ImageButton
+                    android:id="@+id/togglePassword"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="4dp"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_eye"
+                    android:contentDescription="Mostrar palavra-passe" />
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/entrar"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_button_green"
+                android:text="ENTRAR"
+                android:textColor="@color/white"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.03"
+                android:elevation="0dp" />
+
+            <TextView
+                android:id="@+id/Referencia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:gravity="center"
+                android:lineSpacingExtra="3dp"
+                android:text="Laboratório de Mecatrónica\nEstudo e Implementação de Uma Estufa Inteligente de Pequena Dimensão\nEduardo Junqueira · Pedro Pinto"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
