@@ -15,7 +15,8 @@
 
         <activity
             android:name=".IniciarSessaoL1"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -24,15 +25,18 @@
 
         <activity
             android:name=".HomePageL2"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="landscape" />
 
         <activity
             android:name=".SensoresL3"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="landscape" />
 
         <activity
             android:name=".AtuadoresL4"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="landscape" />
 
     </application>
 
