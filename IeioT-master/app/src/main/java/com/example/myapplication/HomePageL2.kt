@@ -49,7 +49,7 @@ class HomePageL2 : AppCompatActivity() {
         }
 
         menuEstufa.setOnClickListener {
-            // TODO: criar ecrã "Estufa" (estado geral e histórico)
+            startActivity(Intent(this, EstufaL5::class.java))
         }
 
         logout.setOnClickListener {

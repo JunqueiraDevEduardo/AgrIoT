@@ -37,7 +37,16 @@
             android:name=".AtuadoresL4"
             android:exported="false"
             android:screenOrientation="landscape" />
+        <activity
+            android:name=".EstufaL5"
+            android:exported="false"
+            android:screenOrientation="landscape" />
 
+        <activity
+            android:name=".PiAquecimentoL6"
+            android:exported="false"
+            android:screenOrientation="landscape" />
     </application>
+
 
 </manifest>

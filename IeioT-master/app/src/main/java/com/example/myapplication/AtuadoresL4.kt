@@ -1,7 +1,9 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Switch
 import android.widget.TextView
@@ -42,6 +44,11 @@ class AtuadoresL4 : AppCompatActivity() {
         val switchPid: Switch = findViewById(R.id.switchPid)
         switchPid.setOnCheckedChangeListener { _, _ ->
             // TODO: ativar/desativar controlo PID
+        }
+
+        val configurarPi: Button = findViewById(R.id.btnConfigurarPi)
+        configurarPi.setOnClickListener {
+            startActivity(Intent(this, PiAquecimentoL6::class.java))
         }
     }
 
