@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFFFF</color>
+    <color name="bg_dark">#10261A</color>
+    <color name="green_primary">#2E7D3A</color>
+    <color name="green_light">#4CAF62</color>
+    <color name="green_dark">#1F6F3D</color>
+    <color name="card_white">#FFFFFFFF</color>
+    <color name="surface_soft">#F3F6F3</color>
+    <color name="input_border">#DCE7DC</color>
+    <color name="divider">#E6ECE6</color>
+    <color name="text_primary">#1C1C1C</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="text_on_green">#FFFFFF</color>
+    <color name="text_on_green_soft">#D7E8DA</color>
+    <color name="chip_green_bg">#DCEFE0</color>
+    <color name="chip_green_text">#1F6F3D</color>
+    <color name="chip_warn_bg">#FDECD8</color>
+    <color name="chip_warn_text">#B45F06</color>
+    <color name="chip_gray_bg">#E9ECEF</color>
+    <color name="red">#C62828</color>
+    <color name="red_soft">#FDE8E8</color>
+    <color name="icon_bg_orange">#FDECD8</color>
+    <color name="icon_orange">#E8923C</color>
+    <color name="icon_bg_blue">#DCEAFB</color>
+    <color name="icon_blue">#3B82C4</color>
+    <color name="icon_bg_purple">#EAE2FB</color>
+    <color name="icon_purple">#8B5FD6</color>
+    <color name="icon_bg_yellow">#FEF1D2</color>
+    <color name="icon_yellow">#E0A52E</color>
+    <color name="icon_bg_green">#DCEFE0</color>
+    <color name="switch_off">#C9CFC9</color>
+    <color name="nav_inactive">#8A948C</color>
+</resources>
