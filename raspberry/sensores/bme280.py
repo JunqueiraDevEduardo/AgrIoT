@@ -3,7 +3,7 @@
 # https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bme280-ds002.pdf
 # ==================================================
 
-from smbus import SMBus
+from smbus2 import SMBus
 import struct
 import time
 
