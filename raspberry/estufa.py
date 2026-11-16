@@ -153,7 +153,7 @@ def loop_sensores():
                 db.row_factory = sqlite3.Row  # <--- ADICIONE ESTA LINHA AQUI
                 ts = time.time()
                 t = temp_simulada(ts)
-humidade_ar = 62.0 + 3.0 * math.sin(ts / 60.0)
+                humidade_ar = 62.0 + 3.0 * math.sin(ts / 60.0)
                 humidade_solo = 41.0 + math.sin(ts / 90.0)
                 pressao = 1013.0
 
