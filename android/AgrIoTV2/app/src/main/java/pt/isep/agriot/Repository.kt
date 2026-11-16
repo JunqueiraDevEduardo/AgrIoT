@@ -37,18 +37,24 @@ interface Repository {
 }
 
 /** Escolhe entre o servidor Flask (URL definido) e o modo demonstração (URL vazio). */
+/** Escolhe entre o servidor Flask (URL definido) e o modo demonstração (URL vazio). */
 object Backend {
+    private const val DEFAULT_URL = "http://100.94.67.33:5000"
     private val prefs get() = App.instance.getSharedPreferences("agriot", Context.MODE_PRIVATE)
     val demo = DemoRepository()
 
     var url: String
-        get() = prefs.getString("url", "") ?: ""
+        get() {
+            val saved = prefs.getString("url", null)
+            return if (saved.isNullOrBlank()) DEFAULT_URL else saved
+        }
         set(v) {
             prefs.edit().putString("url", v.trim()).apply()
         }
 
     fun repo(): Repository = if (url.isBlank()) demo else RemoteRepository(url)
 }
+
 
 /** Cliente HTTP/JSON (REST) para o servidor Flask. */
 class RemoteRepository(base: String) : Repository {
