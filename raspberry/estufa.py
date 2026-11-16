@@ -119,7 +119,6 @@ def init_db():
                 pressao         REAL NOT NULL
             );
             """
-        )
         db.execute(
             "INSERT OR IGNORE INTO atuadores (id, luz, ventoinha, aquecedor, pid, histerese) "
             "VALUES (1, 1, 0, 0, 0, 0)"
@@ -144,7 +143,6 @@ def temp_simulada(ts: float) -> float:
     horas = (ts % 86400) / 3600.0
     return 24.0 + 3.0 * math.sin((horas - 9.0) / 24.0 * 2 * math.pi)
 
-
 def loop_sensores():
     """Corre em segundo plano: regista uma leitura a cada 30s e aplica o
     controlo automático (PID / histerese) ao aquecedor/ventoinha, tal como
@@ -152,9 +150,10 @@ def loop_sensores():
     while True:
         try:
             with closing(sqlite3.connect(DB_PATH)) as db:
+                db.row_factory = sqlite3.Row  # <--- ADICIONE ESTA LINHA AQUI
                 ts = time.time()
                 t = temp_simulada(ts)
-                humidade_ar = 62.0 + 3.0 * math.sin(ts / 60.0)
+humidade_ar = 62.0 + 3.0 * math.sin(ts / 60.0)
                 humidade_solo = 41.0 + math.sin(ts / 90.0)
                 pressao = 1013.0
 
