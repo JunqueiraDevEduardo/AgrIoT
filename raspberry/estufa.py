@@ -119,6 +119,7 @@ def init_db():
                 pressao         REAL NOT NULL
             );
             """
+)
         db.execute(
             "INSERT OR IGNORE INTO atuadores (id, luz, ventoinha, aquecedor, pid, histerese) "
             "VALUES (1, 1, 0, 0, 0, 0)"
