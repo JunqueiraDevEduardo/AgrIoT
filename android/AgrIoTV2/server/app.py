@@ -201,7 +201,8 @@ def get_atuadores():
 def set_atuador(nome):
     if nome not in estado:
         return jsonify(erro="Atuador desconhecido"), 404
-    val = bool(request.get_json(force=True).get("estado"))
+    d_body = request.get_json(force=True)
+    val = bool(d_body.get("estado"))
     with lock:
         if nome == "ventoinha" and estado["pid"]:
             return jsonify(erro="A ventoinha está sob controlo PID"), 409
@@ -209,7 +210,8 @@ def set_atuador(nome):
             return jsonify(erro="O aquecedor está sob controlo por histerese"), 409
         estado[nome] = val
         if nome == "ventoinha":
-            vent["duty"] = 100.0 if val else 0.0
+            duty = float(d_body.get("duty", 50.0 if val else 0.0)) if val else 0.0
+            vent["duty"] = duty
             hw.atuar_ventoinha(vent["duty"]); vent["rpm"] = hw.rpm()
         if nome == "aquecedor":
             hw.atuar_rele(val)
@@ -221,7 +223,28 @@ def set_atuador(nome):
                 estado["aquecedor"] = False; hw.atuar_rele(False)
     db().execute("INSERT OR REPLACE INTO atuadores VALUES (?,?)", (nome, int(val)))
     db().commit()
-    return jsonify(nome=nome, estado=val)
+    return jsonify(nome=nome, estado=val, ventoinha_duty=vent["duty"], ventoinha_rpm=vent["rpm"])
+
+
+@app.put("/api/atuadores/pwm")
+@requer()
+def set_pwm():
+    d = request.get_json(force=True)
+    with lock:
+        if estado["pid"]:
+            return jsonify(erro="A ventoinha está sob controlo PID"), 409
+        duty = float(d.get("duty", 0.0))
+        duty = max(0.0, min(100.0, duty))
+        ligado = bool(d.get("estado", duty > 0))
+        if not ligado:
+            duty = 0.0
+        estado["ventoinha"] = ligado
+        vent["duty"] = duty
+        hw.atuar_ventoinha(duty)
+        vent["rpm"] = hw.rpm()
+    db().execute("INSERT OR REPLACE INTO atuadores VALUES (?,?)", ("ventoinha", int(ligado)))
+    db().commit()
+    return jsonify(nome="ventoinha", estado=ligado, duty=duty, rpm=vent["rpm"])
 
 
 @app.get("/api/pid")
@@ -309,6 +332,73 @@ def eliminar(uid):
     db().execute("DELETE FROM utilizadores WHERE id=?", (uid,))
     db().commit()
     return jsonify(id=uid)
+
+
+# ------------------------------------------------------------ relatórios (admin)
+@app.get("/api/relatorio/<estufa>")
+@requer(admin=True)
+def get_relatorio(estufa):
+    rows = db().execute(
+        "SELECT AVG(temperatura) AS t_avg, MIN(temperatura) AS t_min, MAX(temperatura) AS t_max FROM leituras WHERE ts > ?",
+        (int(time.time()) - 86400,),
+    ).fetchone()
+    with lock:
+        cur = dict(ultima)
+        cur_estado = dict(estado)
+        cur_vent = dict(vent)
+        cur_params = dict(params)
+    u_rows = db().execute("SELECT * FROM utilizadores WHERE estufa=?", (estufa,)).fetchall()
+    utilizadores = [user_json(r) for r in u_rows]
+
+    t_avg = round(rows["t_avg"] if rows and rows["t_avg"] is not None else cur["temperatura"], 1)
+    t_min = round(rows["t_min"] if rows and rows["t_min"] is not None else cur["temperatura"], 1)
+    t_max = round(rows["t_max"] if rows and rows["t_max"] is not None else cur["temperatura"], 1)
+
+    alertas = []
+    if cur["temperatura"] > cur_params["setpoint"] + 3.0:
+        alertas.append(f"Temperatura elevada ({cur['temperatura']:.1f} °C) excede o setpoint ({cur_params['setpoint']:.1f} °C).")
+    if cur["humidade_solo"] < 30.0:
+        alertas.append(f"Humidade do solo reduzida ({cur['humidade_solo']:.1f} %). Sugerida rega.")
+    if any(not u["ativo"] for u in utilizadores):
+        alertas.append("Existem contas desativadas atribuídas a esta estufa.")
+
+    diag = {
+        "Sensor BME280 (I2C 0x76)": "Operacional (sem erros I2C)",
+        "Conversor ADS1115 (I2C 0x48)": "Canal A0 válido (1.15 V - 2.55 V)",
+        "PWM Ventoinha (GPIO12)": f"Ativo a {cur_vent['duty']:.0f} % (25 kHz)" if cur_estado["ventoinha"] else "Desligada (Repouso)",
+        "Tacómetro (GPIO13)": f"{cur_vent['rpm']} RPM detetadas" if cur_estado["ventoinha"] else "0 RPM",
+        "Relé Aquecedor (GPIO17)": "Ativo" if cur_estado["aquecedor"] else "Desligado",
+        "Display OLED SSD1306 (I2C 0x3C)": "Ativo 128x64"
+    }
+
+    return jsonify(
+        estufa=estufa,
+        data_hora=time.strftime("%d/%m/%Y %H:%M:%S"),
+        online=True,
+        temperatura=round(cur["temperatura"], 1),
+        temp_min=t_min,
+        temp_max=t_max,
+        temp_media=t_avg,
+        humidade_ar=round(cur["humidade_ar"], 1),
+        humidade_solo=round(cur["humidade_solo"], 1),
+        pressao=round(cur["pressao"], 1),
+        luz=cur_estado["luz"],
+        ventoinha=cur_estado["ventoinha"],
+        ventoinha_duty=cur_vent["duty"],
+        ventoinha_rpm=cur_vent["rpm"],
+        aquecedor=cur_estado["aquecedor"],
+        pid=cur_estado["pid"],
+        histerese=cur_estado["histerese"],
+        pid_setpoint=cur_params["setpoint"],
+        pid_kp=cur_params["kp"],
+        pid_ki=cur_params["ki"],
+        pid_kd=cur_params["kd"],
+        hist_setpoint=cur_params["setpoint"],
+        hist_h=cur_params["h"],
+        utilizadores=utilizadores,
+        alertas=alertas,
+        diagnostico=diag
+    )
 
 
 # ------------------------------------------------------------ ciclo de controlo

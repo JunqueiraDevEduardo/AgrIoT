@@ -22,7 +22,8 @@ data class Atuadores(
     val pid: Boolean,
     val histerese: Boolean = false,
     val duty: Double = 0.0,   // duty cycle PWM da ventoinha (%)
-    val rpm: Int = 0          // velocidade medida pelo tacómetro
+    val rpm: Int = 0,         // velocidade medida pelo tacómetro
+    val pwm: Boolean = false  // modo PWM manual ativo
 )
 
 data class PidParams(val setpoint: Double, val kp: Double, val ki: Double, val kd: Double)
@@ -36,6 +37,107 @@ data class Utilizador(
     val estufa: String,
     val ativo: Boolean
 )
+
+data class RelatorioEstufa(
+    val estufa: String,
+    val dataHora: String,
+    val online: Boolean,
+    val temperatura: Double,
+    val tempMin: Double,
+    val tempMax: Double,
+    val tempMedia: Double,
+    val humidadeAr: Double,
+    val humidadeSolo: Double,
+    val pressao: Double,
+    val luz: Boolean,
+    val ventoinha: Boolean,
+    val ventoinhaDuty: Double,
+    val ventoinhaRpm: Int,
+    val aquecedor: Boolean,
+    val pidAtivo: Boolean,
+    val histereseAtiva: Boolean,
+    val pidParams: PidParams,
+    val histParams: HistParams,
+    val utilizadores: List<Utilizador>,
+    val alertas: List<String>,
+    val diagnosticoHardware: Map<String, String>
+) {
+    fun formatarRelatorio(): String {
+        val sb = StringBuilder()
+        sb.appendLine("==================================================")
+        sb.appendLine("        AGRIOT — RELATÓRIO OFICIAL DA ESTUFA      ")
+        sb.appendLine("==================================================")
+        sb.appendLine("Estufa: $estufa")
+        sb.appendLine("Data e Hora da Emissão: $dataHora")
+        sb.appendLine("Estado da Conexão: ${if (online) "ONLINE (Operacional)" else "OFFLINE"}")
+        sb.appendLine("Emitido por: ${Session.nome} (${Session.id})")
+        sb.appendLine("Perfil de Acesso: Administrador")
+        sb.appendLine()
+        sb.appendLine("--------------------------------------------------")
+        sb.appendLine("1. CONDIÇÕES AMBIENTAIS E SENSORES (BME280 / ADS1115)")
+        sb.appendLine("--------------------------------------------------")
+        sb.appendLine("• Temperatura Atual: ${fmt(temperatura)} °C")
+        sb.appendLine("  - Média (24h): ${fmt(tempMedia)} °C")
+        sb.appendLine("  - Mínima: ${fmt(tempMin)} °C  |  Máxima: ${fmt(tempMax)} °C")
+        sb.appendLine("• Humidade do Ar: ${fmt(humidadeAr, 0)} %")
+        sb.appendLine("• Humidade do Solo: ${fmt(humidadeSolo, 0)} % (Sensor Capacitivo)")
+        sb.appendLine("• Pressão Atmosférica: ${fmt(pressao, 0)} hPa")
+        sb.appendLine()
+        sb.appendLine("--------------------------------------------------")
+        sb.appendLine("2. ESTADO DOS ATUADORES & CONTROLO PWM")
+        sb.appendLine("--------------------------------------------------")
+        sb.appendLine("• Iluminação (LED GPIO16): ${if (luz) "LIGADA" else "DESLIGADA"}")
+        sb.appendLine("• Ventoinha (GPIO12 PWM / GPIO13 RPM): ${if (ventoinha) "LIGADA" else "DESLIGADA"}")
+        sb.appendLine("  - Duty Cycle PWM: ${fmt(ventoinhaDuty, 0)} %")
+        sb.appendLine("  - Rotações (Tacómetro): $ventoinhaRpm RPM")
+        sb.appendLine("  - Modo Operacional: ${if (pidAtivo) "Automático (Malha PID)" else if (ventoinha) "Manual (Regulação PWM)" else "Desligada"}")
+        sb.appendLine("• Aquecedor (Relé GPIO17): ${if (aquecedor) "LIGADO" else "DESLIGADO"}")
+        sb.appendLine("  - Modo Operacional: ${if (histereseAtiva) "Automático (Histerese)" else if (aquecedor) "Manual" else "Desligado"}")
+        sb.appendLine()
+        sb.appendLine("--------------------------------------------------")
+        sb.appendLine("3. MALHAS DE CONTROLO AUTOMÁTICO")
+        sb.appendLine("--------------------------------------------------")
+        sb.appendLine("• Controlo PID (Ventoinha): ${if (pidAtivo) "ATIVO" else "INATIVO"}")
+        sb.appendLine("  - Setpoint: ${fmt(pidParams.setpoint)} °C")
+        sb.appendLine("  - Ganhos: Kp=${fmt(pidParams.kp)}, Ki=${fmt(pidParams.ki, 2)}, Kd=${fmt(pidParams.kd)}")
+        sb.appendLine("  - Condição de Atuação: T > Setpoint (arrefecimento progressivo)")
+        sb.appendLine("• Controlo por Histerese (Aquecedor): ${if (histereseAtiva) "ATIVO" else "INATIVO"}")
+        sb.appendLine("  - Setpoint: ${fmt(histParams.setpoint)} °C | Banda h: ${fmt(histParams.h)} °C")
+        sb.appendLine("  - Intervalo de Comutação: Liga se T < ${fmt(histParams.setpoint - histParams.h)} °C, Desliga se T >= ${fmt(histParams.setpoint)} °C")
+        sb.appendLine("• Proteção Hardware: Relé e Ventoinha nunca atuam em simultâneo (Mutual Exclusion: OK)")
+        sb.appendLine()
+        sb.appendLine("--------------------------------------------------")
+        sb.appendLine("4. UTILIZADORES COM ACESSO ATRIBUÍDO")
+        sb.appendLine("--------------------------------------------------")
+        if (utilizadores.isEmpty()) {
+            sb.appendLine("• Nenhum utilizador específico atribuído a esta estufa.")
+        } else {
+            for (u in utilizadores) {
+                sb.appendLine("• [${u.id}] ${u.nome} — Perfil: ${u.perfil.uppercase()} — Estado: ${if (u.ativo) "Ativo" else "Inativo"}")
+            }
+        }
+        sb.appendLine()
+        sb.appendLine("--------------------------------------------------")
+        sb.appendLine("5. DIAGNÓSTICO DE HARDWARE & COMUNICAÇÃO")
+        sb.appendLine("--------------------------------------------------")
+        for ((comp, diag) in diagnosticoHardware) {
+            sb.appendLine("• $comp: $diag")
+        }
+        sb.appendLine()
+        sb.appendLine("--------------------------------------------------")
+        sb.appendLine("6. ALERTAS DO SISTEMA & RECOMENDAÇÕES")
+        sb.appendLine("--------------------------------------------------")
+        if (alertas.isEmpty()) {
+            sb.appendLine("• Normalidade: Todos os parâmetros ambientais estão dentro dos limites recomendados.")
+        } else {
+            for (a in alertas) {
+                sb.appendLine("• [ALERTA] $a")
+            }
+        }
+        sb.appendLine("==================================================")
+        return sb.toString()
+    }
+}
 
 class ApiException(val code: Int, message: String) : Exception(message)
 

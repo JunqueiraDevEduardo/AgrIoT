@@ -374,11 +374,32 @@
                             android:textColor="@color/text_primary"
                             android:textSize="12sp" />
                     </LinearLayout>
-                    <View
+                    <LinearLayout
+                        android:id="@+id/tilePwm"
                         android:layout_width="0dp"
                         android:layout_height="84dp"
                         android:layout_marginStart="6dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_tile"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_nav_pwm" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="PWM Ventoinha"
+                            android:textColor="@color/text_primary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 

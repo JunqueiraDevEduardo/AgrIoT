@@ -17,7 +17,15 @@ import androidx.fragment.app.FragmentManager
 
 class MainActivity : AppCompatActivity() {
 
-    private val navIds = intArrayOf(R.id.navHome, R.id.navSensores, R.id.navAtuadores, R.id.navPid, R.id.navHist, R.id.navAdmin)
+    private val navIds = intArrayOf(
+        R.id.navHome,
+        R.id.navSensores,
+        R.id.navAtuadores,
+        R.id.navPid,
+        R.id.navHist,
+        R.id.navPwm,
+        R.id.navAdmin
+    )
     private var current = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun selectTab(i: Int) {
-        if (i == 5 && !Session.admin) {
+        if (i == 6 && !Session.admin) {
             Toast.makeText(this, "Apenas administradores têm acesso a esta área.", Toast.LENGTH_SHORT).show()
             return
         }
@@ -47,7 +55,8 @@ class MainActivity : AppCompatActivity() {
             2 -> AtuadoresFragment()
             3 -> PidFragment()
             4 -> HistFragment()
-            5 -> AdminFragment()
+            5 -> PwmFragment()
+            6 -> AdminFragment()
             else -> HomeFragment()
         }
         supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)

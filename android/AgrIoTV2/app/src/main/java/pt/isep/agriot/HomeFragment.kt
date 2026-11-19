@@ -49,10 +49,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         v.findViewById<View>(R.id.tileAtuadores).setOnClickListener { main.selectTab(2) }
         v.findViewById<View>(R.id.tilePid).setOnClickListener { main.selectTab(3) }
         v.findViewById<View>(R.id.tileHist).setOnClickListener { main.selectTab(4) }
+        v.findViewById<View>(R.id.tilePwm).setOnClickListener { main.selectTab(5) }
         val tileAdmin = v.findViewById<View>(R.id.tileAdmin)
         tileAdmin.alpha = if (Session.admin) 1f else 0.5f
         tileAdmin.setOnClickListener {
-            if (Session.admin) main.selectTab(5)
+            if (Session.admin) main.selectTab(6)
             else Toast.makeText(requireContext(), "Apenas administradores têm acesso a esta área.", Toast.LENGTH_SHORT).show()
         }
     }
