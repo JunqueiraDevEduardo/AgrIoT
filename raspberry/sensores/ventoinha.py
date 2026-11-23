@@ -72,7 +72,7 @@ def parar():
 
 if __name__ == "__main__":
     
-    duty=20   
+    duty=100   
     definir_velocidade(duty)
     time.sleep(10)                  # espera estabilizar
     ler_rpm()                      # limpa o contador
