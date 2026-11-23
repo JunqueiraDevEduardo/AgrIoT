@@ -71,6 +71,10 @@ class AdminFragment : Fragment(R.layout.fragment_admin) {
             gerarRelatorio(selecionada, partilharDireto = true)
         }
 
+        v.findViewById<View>(R.id.btnAdminSettings)?.setOnClickListener {
+            SettingsDialog.show(requireActivity())
+        }
+
         load()
     }
 
@@ -109,32 +113,48 @@ class AdminFragment : Fragment(R.layout.fragment_admin) {
         dialogCarregando.show()
 
         val work: () -> String = {
-            if (estufa.startsWith("Todas")) {
+            val isEn = LanguageManager.isEnglish(requireContext())
+            if (estufa.startsWith("Todas") || estufa.startsWith("All")) {
                 val r1 = Backend.repo().relatorio("Estufa #1")
                 val r2 = Backend.repo().relatorio("Estufa #2")
                 val r3 = Backend.repo().relatorio("Estufa #3")
                 val sb = StringBuilder()
-                sb.appendLine("==================================================")
-                sb.appendLine("     AGRIOT — RELATÓRIO GERAL CONSOLIDADO         ")
-                sb.appendLine("     ESTUFA #1  |  ESTUFA #2  |  ESTUFA #3        ")
-                sb.appendLine("==================================================")
-                sb.appendLine("Data de Emissão: ${r1.dataHora}")
-                sb.appendLine("Administrador Responsável: ${Session.nome} (${Session.id})")
-                sb.appendLine("Total de Utilizadores Registados no Sistema: ${users.size}")
+                if (isEn) {
+                    sb.appendLine("==================================================")
+                    sb.appendLine("     AGRIOT — CONSOLIDATED MASTER REPORT          ")
+                    sb.appendLine("     GREENHOUSE #1  |  #2  |  #3                  ")
+                    sb.appendLine("==================================================")
+                    sb.appendLine("Issue Date: ${r1.dataHora}")
+                    sb.appendLine("Responsible Administrator: ${Session.nome} (${Session.id})")
+                    sb.appendLine("Total Registered Users in System: ${users.size}")
+                    sb.appendLine()
+                    sb.appendLine(">>> 1. GLOBAL COMPARATIVE SUMMARY:")
+                    sb.appendLine("• Greenhouse #1: ${fmt(r1.temperatura)} °C | Humidity: ${fmt(r1.humidadeAr, 0)}% | Soil: ${fmt(r1.humidadeSolo, 0)}% | Fan: ${fmt(r1.ventoinhaDuty, 0)}% (${r1.ventoinhaRpm} RPM) | Heater: ${if (r1.aquecedor) "ON" else "OFF"}")
+                    sb.appendLine("• Greenhouse #2: ${fmt(r2.temperatura)} °C | Humidity: ${fmt(r2.humidadeAr, 0)}% | Soil: ${fmt(r2.humidadeSolo, 0)}% | Fan: ${fmt(r2.ventoinhaDuty, 0)}% (${r2.ventoinhaRpm} RPM) | Heater: ${if (r2.aquecedor) "ON" else "OFF"}")
+                    sb.appendLine("• Greenhouse #3: ${fmt(r3.temperatura)} °C | Humidity: ${fmt(r3.humidadeAr, 0)}% | Soil: ${fmt(r3.humidadeSolo, 0)}% | Fan: ${fmt(r3.ventoinhaDuty, 0)}% (${r3.ventoinhaRpm} RPM) | Heater: ${if (r3.aquecedor) "ON" else "OFF"}")
+                } else {
+                    sb.appendLine("==================================================")
+                    sb.appendLine("     AGRIOT — RELATÓRIO GERAL CONSOLIDADO         ")
+                    sb.appendLine("     ESTUFA #1  |  ESTUFA #2  |  ESTUFA #3        ")
+                    sb.appendLine("==================================================")
+                    sb.appendLine("Data de Emissão: ${r1.dataHora}")
+                    sb.appendLine("Administrador Responsável: ${Session.nome} (${Session.id})")
+                    sb.appendLine("Total de Utilizadores Registados no Sistema: ${users.size}")
+                    sb.appendLine()
+                    sb.appendLine(">>> 1. RESUMO COMPARATIVO GLOBAL:")
+                    sb.appendLine("• Estufa #1: ${fmt(r1.temperatura)} °C | Humidade: ${fmt(r1.humidadeAr, 0)}% | Solo: ${fmt(r1.humidadeSolo, 0)}% | Ventoinha: ${fmt(r1.ventoinhaDuty, 0)}% (${r1.ventoinhaRpm} RPM) | Aquecedor: ${if (r1.aquecedor) "LIGADO" else "OFF"}")
+                    sb.appendLine("• Estufa #2: ${fmt(r2.temperatura)} °C | Humidade: ${fmt(r2.humidadeAr, 0)}% | Solo: ${fmt(r2.humidadeSolo, 0)}% | Ventoinha: ${fmt(r2.ventoinhaDuty, 0)}% (${r2.ventoinhaRpm} RPM) | Aquecedor: ${if (r2.aquecedor) "LIGADO" else "OFF"}")
+                    sb.appendLine("• Estufa #3: ${fmt(r3.temperatura)} °C | Humidade: ${fmt(r3.humidadeAr, 0)}% | Solo: ${fmt(r3.humidadeSolo, 0)}% | Ventoinha: ${fmt(r3.ventoinhaDuty, 0)}% (${r3.ventoinhaRpm} RPM) | Aquecedor: ${if (r3.aquecedor) "LIGADO" else "OFF"}")
+                }
                 sb.appendLine()
-                sb.appendLine(">>> 1. RESUMO COMPARATIVO GLOBAL:")
-                sb.appendLine("• Estufa #1: ${fmt(r1.temperatura)} °C | Humidade: ${fmt(r1.humidadeAr, 0)}% | Solo: ${fmt(r1.humidadeSolo, 0)}% | Ventoinha: ${fmt(r1.ventoinhaDuty, 0)}% (${r1.ventoinhaRpm} RPM) | Aquecedor: ${if (r1.aquecedor) "LIGADO" else "OFF"}")
-                sb.appendLine("• Estufa #2: ${fmt(r2.temperatura)} °C | Humidade: ${fmt(r2.humidadeAr, 0)}% | Solo: ${fmt(r2.humidadeSolo, 0)}% | Ventoinha: ${fmt(r2.ventoinhaDuty, 0)}% (${r2.ventoinhaRpm} RPM) | Aquecedor: ${if (r2.aquecedor) "LIGADO" else "OFF"}")
-                sb.appendLine("• Estufa #3: ${fmt(r3.temperatura)} °C | Humidade: ${fmt(r3.humidadeAr, 0)}% | Solo: ${fmt(r3.humidadeSolo, 0)}% | Ventoinha: ${fmt(r3.ventoinhaDuty, 0)}% (${r3.ventoinhaRpm} RPM) | Aquecedor: ${if (r3.aquecedor) "LIGADO" else "OFF"}")
+                sb.appendLine(r1.formatarRelatorio(isEn))
                 sb.appendLine()
-                sb.appendLine(r1.formatarRelatorio())
+                sb.appendLine(r2.formatarRelatorio(isEn))
                 sb.appendLine()
-                sb.appendLine(r2.formatarRelatorio())
-                sb.appendLine()
-                sb.appendLine(r3.formatarRelatorio())
+                sb.appendLine(r3.formatarRelatorio(isEn))
                 sb.toString()
             } else {
-                Backend.repo().relatorio(estufa).formatarRelatorio()
+                Backend.repo().relatorio(estufa).formatarRelatorio(isEn)
             }
         }
 

@@ -45,6 +45,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         chip.text = "●  ${Session.estufa} · Online"
 
         v.findViewById<View>(R.id.btnLogout).setOnClickListener { main.logout() }
+        v.findViewById<View>(R.id.btnSettings).setOnClickListener { SettingsDialog.show(requireActivity()) }
         v.findViewById<View>(R.id.tileSensores).setOnClickListener { main.selectTab(1) }
         v.findViewById<View>(R.id.tileAtuadores).setOnClickListener { main.selectTab(2) }
         v.findViewById<View>(R.id.tilePid).setOnClickListener { main.selectTab(3) }

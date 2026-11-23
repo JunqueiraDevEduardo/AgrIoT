@@ -43,7 +43,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Início"
+                android:text="@string/nav_home"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -70,7 +70,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sensores"
+                android:text="@string/nav_sensores"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -97,7 +97,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Atuadores"
+                android:text="@string/nav_atuadores"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -124,7 +124,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PID"
+                android:text="@string/nav_pid"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -151,7 +151,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Histerese"
+                android:text="@string/nav_hist"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -178,7 +178,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PWM"
+                android:text="@string/nav_pwm"
                 android:textSize="10sp" />
         </LinearLayout>
 
@@ -205,7 +205,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Admin"
+                android:text="@string/nav_admin"
                 android:textSize="10sp" />
         </LinearLayout>
     </LinearLayout>

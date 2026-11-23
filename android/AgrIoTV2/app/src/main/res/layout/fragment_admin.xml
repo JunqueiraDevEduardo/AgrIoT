@@ -303,6 +303,17 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAdminSettings"
+                style="@style/ButtonOutline"
+                android:layout_marginTop="12dp"
+                android:drawableStart="@drawable/ic_settings"
+                android:drawablePadding="8dp"
+                android:paddingStart="40dp"
+                android:paddingEnd="40dp"
+                android:text="DEFINIÇÕES (IDIOMA E SERVIDOR)"
+                android:textSize="12sp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

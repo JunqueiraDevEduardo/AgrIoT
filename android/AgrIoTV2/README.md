@@ -1,6 +1,13 @@
 # AgrIoT v2 (app Android + servidor Flask)
 
 Novidades face à v1 (segundo o relatório R2):
+- **Simulações Térmicas e Controlo PWM em Tempo Real (PwmSim, PidSim, HistSim)**:
+  - Nova simulação gráfica interativa da ventoinha por **PWM** (`PwmSim`) no ecrã PWM: gráfico em tempo real (`LineChartView`) com curva de temperatura, alvo térmico e saída PWM, métricas de RPM, temperatura de equilíbrio e taxa de variação térmica (°C/min), botões PAUSAR e REPOR.
+  - Ajuste suave e sem congelamento: `PidSim`, `HistSim` e `PwmSim` agora utilizam janela deslizante contínua, permitindo que as simulações corram sem parar abruptamente aos 300 pontos.
+- **Suporte Bilingue e Ecrã de Definições (Português / English)**:
+  - Novo botão de definições na barra superior (Início, Login e Admin) que abre o diálogo de **Definições / Settings**.
+  - Permite alternar com um toque entre **Português (🇵🇹)** e **English (🇬🇧)**, aplicando o idioma e atualizando imediatamente toda a interface, navegação e relatórios.
+  - Atalho integrado para configuração do endereço do servidor Flask / Tailscale.
 - **Controlo PWM Manual da Ventoinha**:
   - Nova aba **PWM** na barra inferior (banner em baixo) e atalho no Início, com monitorização em tempo real de Duty Cycle (%) e Tacómetro (RPM, GPIO13).
   - Regulação manual contínua por slider (0 a 100%) e botões de atalho (0%, 25%, 50%, 75%, 100%), permitindo regular as rotações sem ficar limitado a 100%.

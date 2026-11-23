@@ -14,19 +14,23 @@ import androidx.fragment.app.Fragment
 import kotlin.math.roundToInt
 
 /**
- * Controlo e monitorização por PWM da velocidade da ventoinha (secção 3.1 do relatório).
- * Permite regular manualmente as rotações por minuto (RPM) sem ficar fixo a 100%.
+ * Ecrã de Controlo e Simulação da Ventoinha por PWM.
+ * Permite simulação gráfica contínua da resposta térmica e ajuste manual de rotações.
  */
 class PwmFragment : Fragment(R.layout.fragment_pwm) {
 
     private val h = Handler(Looper.getMainLooper())
     private var loading = false
-    private var currentDuty = 45.0
     private var pidAtivo = false
 
-    private lateinit var chipEstado: TextView
-    private lateinit var tvDutyVal: TextView
-    private lateinit var tvRpmVal: TextView
+    private lateinit var chart: LineChartView
+    private lateinit var chipSimPwm: TextView
+    private lateinit var tvPwmSimRpm: TextView
+    private lateinit var tvPwmSimTeq: TextView
+    private lateinit var tvPwmSimTaxa: TextView
+    private lateinit var btnPausarPwm: Button
+    private lateinit var btnReporPwm: Button
+
     private lateinit var tvSliderDutyDisplay: TextView
     private lateinit var swPwmAtivo: SwitchCompat
     private lateinit var sbDuty: SeekBar
@@ -39,17 +43,34 @@ class PwmFragment : Fragment(R.layout.fragment_pwm) {
     private lateinit var btnPwm75: Button
     private lateinit var btnPwm100: Button
 
-    private val tick = object : Runnable {
+    private val tickSim = object : Runnable {
         override fun run() {
-            load()
+            if (PwmSim.running) PwmSim.step()
+            refreshSim()
+            h.postDelayed(this, 100) // 1 s simulado = 100 ms reais
+        }
+    }
+
+    private val tickTelemetry = object : Runnable {
+        override fun run() {
+            loadTelemetry()
             h.postDelayed(this, 3000)
         }
     }
 
     override fun onViewCreated(v: View, savedInstanceState: Bundle?) {
-        chipEstado = v.findViewById(R.id.chipPwmEstado)
-        tvDutyVal = v.findViewById(R.id.tvPwmDutyVal)
-        tvRpmVal = v.findViewById(R.id.tvPwmRpmVal)
+        chart = v.findViewById(R.id.chartPwm)
+        chart.maxPoints = PwmSim.MAX_POINTS
+        chart.yMin = 15.0
+        chart.yMax = 40.0
+
+        chipSimPwm = v.findViewById(R.id.chipSimPwm)
+        tvPwmSimRpm = v.findViewById(R.id.tvPwmSimRpm)
+        tvPwmSimTeq = v.findViewById(R.id.tvPwmSimTeq)
+        tvPwmSimTaxa = v.findViewById(R.id.tvPwmSimTaxa)
+        btnPausarPwm = v.findViewById(R.id.btnPausarPwm)
+        btnReporPwm = v.findViewById(R.id.btnReporPwm)
+
         tvSliderDutyDisplay = v.findViewById(R.id.tvSliderDutyDisplay)
         swPwmAtivo = v.findViewById(R.id.swPwmAtivo)
         sbDuty = v.findViewById(R.id.sbDuty)
@@ -62,27 +83,30 @@ class PwmFragment : Fragment(R.layout.fragment_pwm) {
         btnPwm75 = v.findViewById(R.id.btnPwm75)
         btnPwm100 = v.findViewById(R.id.btnPwm100)
 
-        // Switch principal de controlo manual PWM
-        swPwmAtivo.setOnCheckedChangeListener { _, checked ->
-            if (loading) return@setOnCheckedChangeListener
-            if (pidAtivo) {
-                Toast.makeText(requireContext(), "Desative o PID para controlo manual", Toast.LENGTH_SHORT).show()
-                swPwmAtivo.isChecked = false
-                return@setOnCheckedChangeListener
-            }
-            val targetDuty = if (checked) (if (currentDuty > 0) currentDuty else 45.0) else 0.0
-            sendPwm(targetDuty, checked)
+        // Controlo da simulação (Pausar / Repor)
+        btnPausarPwm.setOnClickListener {
+            PwmSim.running = !PwmSim.running
+            refreshSim()
+        }
+        btnReporPwm.setOnClickListener {
+            PwmSim.reset()
+            refreshSim()
         }
 
-        // SeekBar do Duty Cycle
+        // Switch de ativação manual do PWM
+        swPwmAtivo.setOnCheckedChangeListener { _, checked ->
+            if (loading) return@setOnCheckedChangeListener
+            val targetDuty = if (checked) (if (PwmSim.duty > 0) PwmSim.duty else 45.0) else 0.0
+            applyPwm(targetDuty, checked)
+        }
+
+        // Slider contínuo de PWM
         sbDuty.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    currentDuty = progress.toDouble()
-                    val rpmCalc = if (progress > 0) (600 + progress * 38) else 0
-                    tvSliderDutyDisplay.text = "$progress %"
-                    tvDutyVal.text = "$progress %"
-                    tvRpmVal.text = "$rpmCalc RPM"
+                    val d = progress.toDouble()
+                    PwmSim.setDuty(d)
+                    updateSliderLabel(d)
                 }
             }
 
@@ -90,21 +114,14 @@ class PwmFragment : Fragment(R.layout.fragment_pwm) {
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 val p = seekBar?.progress ?: 0
-                currentDuty = p.toDouble()
-                sendPwm(currentDuty, p > 0)
+                val d = p.toDouble()
+                applyPwm(d, p > 0)
             }
         })
 
-        // Níveis pré-definidos rápidos
         fun preset(d: Double) {
-            if (pidAtivo) {
-                Toast.makeText(requireContext(), "Desative o PID para controlo manual", Toast.LENGTH_SHORT).show()
-                return
-            }
-            currentDuty = d
             sbDuty.progress = d.roundToInt()
-            tvSliderDutyDisplay.text = "${d.roundToInt()} %"
-            sendPwm(d, d > 0)
+            applyPwm(d, d > 0)
         }
 
         btnPwm0.setOnClickListener { preset(0.0) }
@@ -113,25 +130,29 @@ class PwmFragment : Fragment(R.layout.fragment_pwm) {
         btnPwm75.setOnClickListener { preset(75.0) }
         btnPwm100.setOnClickListener { preset(100.0) }
 
-        // Botão para desativar PID e assumir controlo manual PWM
+        // Botão para desativar PID caso esteja em controlo automático
         btnDesativarPid.setOnClickListener {
             runAsync({
                 Backend.repo().setAtuador("pid", false)
-                Backend.repo().setPwm(currentDuty.coerceAtLeast(40.0), true)
+                Backend.repo().setPwm(PwmSim.duty.coerceAtLeast(40.0), true)
             }) { r ->
                 if (!isAdded || view == null) return@runAsync
                 r.onSuccess {
                     Toast.makeText(requireContext(), "PID desativado. Modo PWM manual ativo.", Toast.LENGTH_SHORT).show()
-                    load()
+                    loadTelemetry()
                 }
                 r.onFailure { Toast.makeText(requireContext(), it.message ?: "Erro", Toast.LENGTH_SHORT).show() }
             }
         }
+
+        updateSliderLabel(PwmSim.duty)
+        refreshSim()
     }
 
     override fun onResume() {
         super.onResume()
-        h.post(tick)
+        h.post(tickSim)
+        h.post(tickTelemetry)
     }
 
     override fun onPause() {
@@ -139,54 +160,55 @@ class PwmFragment : Fragment(R.layout.fragment_pwm) {
         h.removeCallbacksAndMessages(null)
     }
 
-    private fun sendPwm(duty: Double, ligado: Boolean) {
-        runAsync({ Backend.repo().setPwm(duty, ligado) }) { r ->
+    private fun applyPwm(duty: Double, ligado: Boolean) {
+        val target = if (ligado) duty else 0.0
+        PwmSim.setDuty(target)
+        updateSliderLabel(target)
+        runAsync({ Backend.repo().setPwm(target, ligado) }) { r ->
             if (!isAdded || view == null) return@runAsync
             r.onFailure {
                 Toast.makeText(requireContext(), it.message ?: "Erro ao definir PWM", Toast.LENGTH_SHORT).show()
             }
-            load()
+            loadTelemetry()
         }
     }
 
-    private fun load() {
+    private fun updateSliderLabel(d: Double) {
+        val rpm = if (d > 0.0) (600 + d * 38).toInt() else 0
+        tvSliderDutyDisplay.text = "${d.roundToInt()} % · $rpm RPM"
+    }
+
+    private fun refreshSim() {
+        if (!isAdded || view == null) return
+        val ctx = requireContext()
+        val toRange = { out: Double -> 15.0 + out / 100.0 * 25.0 }
+
+        chart.setData(
+            listOf(
+                LineChartView.Serie(PwmSim.saidas.map(toRange), ContextCompat.getColor(ctx, R.color.icon_blue), width = 1.5f),
+                LineChartView.Serie(PwmSim.alvos, ContextCompat.getColor(ctx, R.color.icon_orange), dashed = true, width = 2f),
+                LineChartView.Serie(PwmSim.temps, ContextCompat.getColor(ctx, R.color.green_primary), width = 3f)
+            )
+        )
+
+        tvPwmSimRpm.text = "${PwmSim.rpm}"
+        tvPwmSimTeq.text = "${fmtPt(PwmSim.tempEstabilizada())} °C"
+        tvPwmSimTaxa.text = "${fmtPt(PwmSim.taxaVariacao())} °C/m"
+        chipSimPwm.text = if (PwmSim.running) "A simular" else "Em pausa"
+        btnPausarPwm.text = if (PwmSim.running) "PAUSAR" else "RETOMAR"
+    }
+
+    private fun loadTelemetry() {
         runAsync({ Backend.repo().atuadores() }) { r ->
             if (!isAdded || view == null) return@runAsync
             r.onSuccess { a ->
                 loading = true
                 pidAtivo = a.pid
-                currentDuty = a.duty
+                cardPidWarning.visibility = if (a.pid) View.VISIBLE else View.GONE
 
-                tvDutyVal.text = fmt(a.duty, 0) + " %"
-                tvRpmVal.text = if (a.ventoinha && a.rpm > 0) "${a.rpm} RPM" else if (a.duty > 0) "${(600 + a.duty * 38).toInt()} RPM" else "0 RPM"
-                tvSliderDutyDisplay.text = fmt(a.duty, 0) + " %"
-                sbDuty.progress = a.duty.roundToInt()
-
-                val ventLigada = a.ventoinha || (a.duty > 0)
+                val ventLigada = a.ventoinha || a.duty > 0.0
                 swPwmAtivo.isChecked = ventLigada && !a.pid
 
-                when {
-                    a.pid -> {
-                        chipEstado.text = "PID Automático"
-                        chipEstado.setBackgroundResource(R.drawable.bg_chip_warn)
-                        chipEstado.setTextColor(ContextCompat.getColor(requireContext(), R.color.chip_warn_text))
-                        cardPidWarning.visibility = View.VISIBLE
-                    }
-                    ventLigada -> {
-                        chipEstado.text = "Manual · " + fmt(a.duty, 0) + " %"
-                        chipEstado.setBackgroundResource(R.drawable.bg_chip_green)
-                        chipEstado.setTextColor(ContextCompat.getColor(requireContext(), R.color.chip_green_text))
-                        cardPidWarning.visibility = View.GONE
-                    }
-                    else -> {
-                        chipEstado.text = "Desligada"
-                        chipEstado.setBackgroundResource(R.drawable.bg_chip_gray)
-                        chipEstado.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
-                        cardPidWarning.visibility = View.GONE
-                    }
-                }
-
-                // Quando o PID está ativo, o controlo manual fica bloqueado
                 val manualPermitido = !a.pid
                 swPwmAtivo.isEnabled = manualPermitido
                 swPwmAtivo.alpha = if (manualPermitido) 1f else 0.45f
@@ -197,9 +219,13 @@ class PwmFragment : Fragment(R.layout.fragment_pwm) {
                     it.alpha = if (manualPermitido) 1f else 0.45f
                 }
 
+                if (!a.pid && a.duty > 0.0) {
+                    PwmSim.setDuty(a.duty)
+                    sbDuty.progress = a.duty.roundToInt()
+                    updateSliderLabel(a.duty)
+                }
                 loading = false
             }
-            r.onFailure { Toast.makeText(requireContext(), it.message ?: "Erro", Toast.LENGTH_SHORT).show() }
         }
     }
 }

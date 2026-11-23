@@ -13,10 +13,18 @@ import androidx.core.content.ContextCompat
 
 class LoginActivity : AppCompatActivity() {
 
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(LanguageManager.applyLanguage(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.statusBarColor = ContextCompat.getColor(this, R.color.bg_dark)
         setContentView(R.layout.activity_login)
+
+        findViewById<ImageButton>(R.id.btnLoginSettings)?.setOnClickListener {
+            SettingsDialog.show(this)
+        }
 
         val etId: EditText = findViewById(R.id.etId)
         val etPass: EditText = findViewById(R.id.etPass)

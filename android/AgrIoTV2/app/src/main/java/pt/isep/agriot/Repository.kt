@@ -24,6 +24,10 @@ class App : Application() {
         instance = this
     }
 
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(LanguageManager.applyLanguage(base))
+    }
+
     companion object {
         lateinit var instance: App
     }
@@ -392,13 +396,16 @@ class DemoRepository : Repository {
 
     override fun setPwm(duty: Double, ligado: Boolean) {
         pause()
-        if (act.pid) throw ApiException(409, "A ventoinha está sob controlo PID. Desative o PID primeiro.")
+        if (act.pid) {
+            act = act.copy(pid = false)
+        }
         manualDuty = duty.coerceIn(0.0, 100.0)
         pwmManualLigado = ligado && manualDuty > 0.0
         act = act.copy(
             ventoinha = pwmManualLigado,
             duty = if (pwmManualLigado) manualDuty else 0.0,
-            pwm = pwmManualLigado
+            pwm = pwmManualLigado,
+            pid = false
         )
     }
 

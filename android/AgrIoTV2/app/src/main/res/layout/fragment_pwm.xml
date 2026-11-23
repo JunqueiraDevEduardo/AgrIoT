@@ -20,7 +20,7 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <!-- Card 1: Estado atual e leituras da ventoinha -->
+            <!-- Card 1: Simulação Gráfica em Tempo Real da Ventoinha PWM -->
             <LinearLayout
                 style="@style/Card"
                 android:layout_width="match_parent"
@@ -33,112 +33,178 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <FrameLayout
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        android:background="@drawable/bg_circle_blue">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/ic_fan" />
-                    </FrameLayout>
-
-                    <LinearLayout
+                    <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="14dp"
                         android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-condensed"
-                            android:text="Ventoinha de Arrefecimento"
-                            android:textColor="@color/text_primary"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            style="@style/LabelSmall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="4 Pinos · PWM GPIO12 · Tacómetro GPIO13"
-                            android:textSize="12sp" />
-                    </LinearLayout>
+                        android:fontFamily="sans-serif-condensed"
+                        android:text="Simulação Térmica da Ventoinha (PWM)"
+                        android:textColor="@color/text_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/chipPwmEstado"
+                        android:id="@+id/chipSimPwm"
                         style="@style/Chip"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Manual" />
+                        android:text="A simular" />
                 </LinearLayout>
 
+                <pt.isep.agriot.LineChartView
+                    android:id="@+id/chartPwm"
+                    android:layout_width="match_parent"
+                    android:layout_height="145dp"
+                    android:layout_marginTop="10dp" />
+
+                <!-- Legenda de cores do gráfico -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="●  Temperatura"
+                        android:textColor="@color/green_primary"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="●  Alvo Térmico"
+                        android:textColor="@color/icon_orange"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="●  Saída PWM %"
+                        android:textColor="@color/icon_blue"
+                        android:textSize="11sp" />
+                </LinearLayout>
+
+                <!-- Três mini-cartões com as métricas dinâmicas da simulação -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
                     android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="6dp"
+                        android:layout_marginEnd="4dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_mini"
                         android:gravity="center_horizontal"
                         android:orientation="vertical"
-                        android:padding="12dp">
+                        android:padding="8dp">
 
                         <TextView
-                            android:id="@+id/tvPwmDutyVal"
+                            android:id="@+id/tvPwmSimRpm"
                             style="@style/ValueBig"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="45 %"
-                            android:textColor="@color/icon_blue" />
+                            android:text="2310"
+                            android:textSize="20sp" />
 
                         <TextView
                             style="@style/LabelSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Duty Cycle (PWM)"
-                            android:textSize="11sp" />
+                            android:text="RPM Tacómetro"
+                            android:textSize="10sp" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_mini"
                         android:gravity="center_horizontal"
                         android:orientation="vertical"
-                        android:padding="12dp">
+                        android:padding="8dp">
 
                         <TextView
-                            android:id="@+id/tvPwmRpmVal"
+                            android:id="@+id/tvPwmSimTeq"
                             style="@style/ValueBig"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="2310 RPM"
-                            android:textColor="@color/green_primary" />
+                            android:text="27,5 °C"
+                            android:textSize="20sp" />
 
                         <TextView
                             style="@style/LabelSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Velocidade Medida"
-                            android:textSize="11sp" />
+                            android:text="Temp. Alvo"
+                            android:textSize="10sp" />
                     </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_mini"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:id="@+id/tvPwmSimTaxa"
+                            style="@style/ValueBig"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-0,8 °C/m"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            style="@style/LabelSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Taxa Térmica"
+                            android:textSize="10sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Botões de controlo da simulação -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnPausarPwm"
+                        style="@style/ButtonOutline"
+                        android:layout_width="0dp"
+                        android:layout_height="42dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:text="PAUSAR"
+                        android:textSize="12sp" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnReporPwm"
+                        style="@style/ButtonOutline"
+                        android:layout_width="0dp"
+                        android:layout_height="42dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:text="REPOR"
+                        android:textSize="12sp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Card 2: Controlo Manual das Rotações -->
+            <!-- Card 2: Regulação Manual das Rotações por PWM -->
             <LinearLayout
                 style="@style/Card"
                 android:layout_width="match_parent"
@@ -152,9 +218,23 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
+                    <FrameLayout
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/bg_circle_blue">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_fan" />
+                    </FrameLayout>
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
                         android:orientation="vertical">
 
@@ -162,18 +242,17 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-condensed"
-                            android:text="Regulação Manual de Rotações"
+                            android:text="Regulação de Rotações (Duty Cycle)"
                             android:textColor="@color/text_primary"
-                            android:textSize="17sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/tvPwmStatusSub"
                             style="@style/LabelSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Permite operar abaixo de 100% de velocidade"
-                            android:textSize="12sp" />
+                            android:text="Ajuste contínuo para evitar rotação fixa a 100%"
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                     <androidx.appcompat.widget.SwitchCompat
@@ -187,8 +266,8 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:background="@color/divider" />
 
                 <LinearLayout
@@ -202,7 +281,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Intensidade / Duty Cycle:"
+                        android:text="Velocidade Selecionada:"
                         android:textSize="13sp" />
 
                     <TextView
@@ -210,29 +289,29 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-condensed"
-                        android:text="45 %"
+                        android:text="45 % · 2310 RPM"
                         android:textColor="@color/green_primary"
-                        android:textSize="18sp"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- Presets de velocidade rápida -->
                 <SeekBar
                     android:id="@+id/sbDuty"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="6dp"
                     android:max="100"
                     android:progress="45"
                     android:progressTint="@color/green_primary"
                     android:thumbTint="@color/green_primary" />
 
+                <!-- Presets de velocidade rápida -->
                 <TextView
                     style="@style/LabelSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="Níveis pré-definidos:"
+                    android:layout_marginTop="10dp"
+                    android:text="Níveis rápidos pré-definidos:"
                     android:textSize="11sp" />
 
                 <LinearLayout
@@ -245,8 +324,8 @@
                         android:id="@+id/btnPwm0"
                         style="?android:attr/borderlessButtonStyle"
                         android:layout_width="0dp"
-                        android:layout_height="38dp"
-                        android:layout_marginEnd="3dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="2dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_button_danger_outline"
                         android:text="OFF"
@@ -258,9 +337,9 @@
                         android:id="@+id/btnPwm25"
                         style="?android:attr/borderlessButtonStyle"
                         android:layout_width="0dp"
-                        android:layout_height="38dp"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginEnd="3dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_button_outline"
                         android:text="25%"
@@ -272,9 +351,9 @@
                         android:id="@+id/btnPwm50"
                         style="?android:attr/borderlessButtonStyle"
                         android:layout_width="0dp"
-                        android:layout_height="38dp"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginEnd="3dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_button_outline"
                         android:text="50%"
@@ -286,9 +365,9 @@
                         android:id="@+id/btnPwm75"
                         style="?android:attr/borderlessButtonStyle"
                         android:layout_width="0dp"
-                        android:layout_height="38dp"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginEnd="3dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginEnd="2dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_button_outline"
                         android:text="75%"
@@ -300,8 +379,8 @@
                         android:id="@+id/btnPwm100"
                         style="?android:attr/borderlessButtonStyle"
                         android:layout_width="0dp"
-                        android:layout_height="38dp"
-                        android:layout_marginStart="3dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="2dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_button_outline"
                         android:text="100%"
@@ -318,7 +397,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:background="@drawable/bg_card"
                 android:orientation="vertical"
                 android:visibility="gone">
 
@@ -336,7 +414,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="A velocidade da ventoinha está a ser calculada pelo algoritmo PID em função do Setpoint térmico. O controlo manual direto está suspenso."
+                    android:text="A rotação está a ser gerida pela malha PID. Para regular manualmente com PWM, desative o PID."
                     android:textColor="@color/text_primary"
                     android:textSize="12sp" />
 
@@ -349,7 +427,7 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
-            <!-- Card 4: Fórmulas e Informação Técnica -->
+            <!-- Card 4: Fórmulas e Especificações Técnicas -->
             <LinearLayout
                 style="@style/Card"
                 android:layout_width="match_parent"
@@ -361,7 +439,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-condensed"
-                    android:text="Especificações Técnicas da Ventoinha"
+                    android:text="Especificações Técnicas da Ventoinha (R2)"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -372,7 +450,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:lineSpacingExtra="2dp"
-                    android:text="• Frequência de PWM: 25 kHz (norma padrão de 4 pinos para evitar ruído audível).\n• Relação de Rotação Estimada: RPM ≈ 600 + (Duty % × 38).\n• Tacómetro (GPIO13): Envia 2 impulsos por rotação para medição precisa de RPM.\n• Poupança Energética: A regulação por PWM evita desgaste mecânico e reduz drasticamente o consumo elétrico quando a estufa não necessita de arrefecimento máximo."
+                    android:text="• Frequência PWM: 25 kHz no GPIO12 (inviolável, elimina ruído audível).\n• Tacómetro: GPIO13 com pull-up de 4,7 kΩ, 2 impulsos por rotação.\n• Relação de Velocidade: RPM ≈ 600 + (Duty % × 38).\n• Proteção contra Falha: Se desligada, duty passa a 0% para economizar energia."
                     android:textColor="@color/text_secondary"
                     android:textSize="11sp" />
             </LinearLayout>

@@ -28,6 +28,10 @@ class MainActivity : AppCompatActivity() {
     )
     private var current = 0
 
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(LanguageManager.applyLanguage(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Session.id.isEmpty()) { // sessão perdida (ex.: processo terminado)

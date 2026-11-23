@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">AgrIoT</string>
+    <string name="nav_home">Início</string>
+    <string name="nav_sensores">Sensores</string>
+    <string name="nav_atuadores">Atuadores</string>
+    <string name="nav_pid">PID</string>
+    <string name="nav_hist">Histerese</string>
+    <string name="nav_pwm">PWM</string>
+    <string name="nav_admin">Admin</string>
+    <string name="settings">Definições</string>
+    <string name="language">Idioma</string>
+    <string name="portuguese">Português</string>
+    <string name="english">Inglês</string>
+    <string name="pause">PAUSAR</string>
+    <string name="resume">RETOMAR</string>
+    <string name="reset">REPOR</string>
+    <string name="simulating">A simular</string>
+    <string name="in_pause">Em pausa</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="close">Fechar</string>
+    <string name="copy">Copiar</string>
+    <string name="share">Partilhar</string>
 </resources>
