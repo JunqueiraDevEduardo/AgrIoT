@@ -49,7 +49,7 @@ desligar()
 if __name__ == "__main__":
     print("Aquecimento LIGADO")
     ligar()
-    time.sleep(5)
+    time.sleep(50000)
 #    print("Aquecimento DESLIGADO")
  #   desligar()
   #  parar()
