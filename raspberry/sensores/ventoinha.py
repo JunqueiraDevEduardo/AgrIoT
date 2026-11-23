@@ -72,11 +72,11 @@ def parar():
 
 if __name__ == "__main__":
     
-    duty=20   
+    duty=0   
     definir_velocidade(duty)
     time.sleep(10)                  # espera estabilizar
     ler_rpm()                      # limpa o contador
     time.sleep(1)
     rpm = ler_rpm()
     print(f"PWM: {duty:3d}%  |  RPM lidos: {rpm:.0f}")
-    parar()   
+    
