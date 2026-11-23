@@ -74,7 +74,7 @@ if __name__ == "__main__":
     
     duty=20   
     definir_velocidade(duty)
-    time.sleep(3)                  # espera estabilizar
+    time.sleep(10)                  # espera estabilizar
     ler_rpm()                      # limpa o contador
     time.sleep(1)
     rpm = ler_rpm()
