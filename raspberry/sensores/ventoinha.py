@@ -79,4 +79,4 @@ if __name__ == "__main__":
     time.sleep(1)
     rpm = ler_rpm()
     print(f"PWM: {duty:3d}%  |  RPM lidos: {rpm:.0f}")
-   
+    parar()   
