@@ -36,7 +36,7 @@ pronto = False
 
 try:
     fonte = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf", 9)
-except OSError:
+except Exception:
     fonte = ImageFont.load_default()
 
 
