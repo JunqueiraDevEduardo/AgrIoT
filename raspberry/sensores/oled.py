@@ -83,3 +83,14 @@ _comando(0xAE,           # ecrã off
          0xA8, 0x3F,     # multiplex 64
          0xD3, 0x00,     # offset vertical
          0x40,           # linha inicial
+         0x8D, 0x14,     # charge pump on
+         0x20, 0x00,     # endereçamento horizontal
+         0xA1, 0xC8,     # orientação normal
+         0xDA, 0x12,     # configuração dos pinos COM
+         0x81, 0xCF,     # contraste
+         0xD9, 0xF1,
+         0xDB, 0x40,
+         0xA4, 0xA6,     # imagem normal
+         0xAF
+         )               # ecrã on
+limpar()
