@@ -196,6 +196,8 @@ object PwmSim {
     /** Temperatura para a qual a estufa converge com o duty cycle atual. */
     fun targetTemp(): Double = (T_EQ - K_VENT * duty).coerceAtLeast(18.0)
 
+    fun tempEstabilizada(): Double = targetTemp()
+
     /** Avança Ts = 1 s de tempo simulado da ventoinha. */
     fun step() {
         val target = targetTemp()

@@ -20,6 +20,12 @@ object LanguageManager {
 
     fun isEnglish(context: Context): Boolean = getLanguage(context) == "en"
 
+    fun initApp(context: Context) {
+        val lang = getLanguage(context)
+        val locale = if (lang == "en") Locale.ENGLISH else Locale("pt", "PT")
+        Locale.setDefault(locale)
+    }
+
     fun setLanguage(activity: Activity, lang: String) {
         val prefs = activity.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit().putString(KEY_LANG, lang).apply()

@@ -22,10 +22,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-    }
-
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(LanguageManager.applyLanguage(base))
+        LanguageManager.initApp(this)
     }
 
     companion object {
